@@ -12,6 +12,8 @@ import {
   createUser,
   updateUser,
   deleteUser,
+  getEmployeeDetails,
+  getRevokedComplaints,
 } from '../controllers/adminController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { authorize } from '../middleware/roleMiddleware.js';
@@ -23,6 +25,7 @@ router.use(protect, authorize('admin'));
 
 // Complaint management
 router.get('/complaints', getAllComplaints);
+router.get('/complaints/revoked', getRevokedComplaints);
 router.put('/assign-department/:id', assignDepartment);
 router.put('/assign-officer/:id', assignOfficer);
 
@@ -30,9 +33,10 @@ router.put('/assign-officer/:id', assignOfficer);
 router.post('/departments', createDepartment);
 router.get('/departments', getDepartments);
 
-// Employee management (legacy)
+// Employee management (legacy & detailed)
 router.post('/employees', createEmployee);
 router.get('/employees', getEmployees);
+router.get('/employees/:id', getEmployeeDetails);
 
 // User management (full CRUD)
 router.get('/users', getAllUsers);

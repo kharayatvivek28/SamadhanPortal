@@ -37,21 +37,36 @@ A full-stack government complaint management platform built with the **MERN stac
 ## ✨ Features
 
 ### For Citizens
-- 📝 **File Complaints** — Submit grievances with department, priority, and description
-- 📊 **Track Progress** — Visual progress tracker (Submitted → Dept. Assigned → Officer Assigned → In Progress → Resolved)
-- 🕐 **Transparent Timeline** — See every action taken on your complaint with timestamps and officer names
+- 📝 **File Complaints** — Submit grievances with department, priority, and description.
+- 📊 **Track Progress** — Visual progress tracker (Submitted → Dept. Assigned → Officer Assigned → In Progress → Resolved).
+- 🕐 **Transparent Timeline** — See every action taken on your complaint with timestamps and officer names.
+- 💬 **Private Direct Messages** — Isolated communication threads between citizens and assigned officers.
+- ⭐ **Post-Resolution Feedback** — Provide ratings and remarks once a complaint is formally closed.
 
 ### For Administrators
-- 📋 **Manage All Complaints** — View, filter, and manage all complaints system-wide
-- 🏢 **Department Management** — Create and manage government departments
-- 👥 **Employee CRUD** — Full create, read, update, delete operations for employee accounts
-- 🔒 **Access Control** — Only admins can create employee/admin accounts
-- 📈 **Dashboard Statistics** — Total complaints, resolution rates, department activity
+- 📋 **Manage All Complaints** — View, filter, and manage all complaints system-wide.
+- 🏢 **Department Management** — Create and manage government departments.
+- 👥 **Employee CRUD** — Full create, read, update, delete operations for employee accounts.
+- 🔒 **Access Control** — Only admins can create employee/admin accounts.
+- 📈 **Dashboard Statistics** — Total complaints, resolution rates, department activity.
+- 🚨 **Automated Escalation** — Unresolved complaints automatically escalate via systemic cron jobs after 7 days of inactivity.
 
 ### For Employees (Officers)
-- 📨 **Assigned Complaints** — View complaints assigned to you
-- 🔄 **Status Updates** — Change complaint status with transparent history logging
-- 💬 **Add Remarks** — Add notes and updates visible to citizens in the timeline
+- 📨 **Assigned Complaints** — View complaints assigned to your specific department.
+- 🔄 **Status Updates** — Change complaint status with transparent history logging and real-time emails.
+- 💬 **Add Remarks** — Add notes and updates visible to citizens in the timeline, or message them privately.
+
+### 🛡️ Security & Real-Time Alerts
+- 🔐 **JWT-based Authentication** — Complete with role-based access controls and automatic Google OAuth metadata extraction.
+- 📧 **Email OTP Verification** — 2-Step secure registration ensures valid citizen identities via Nodemailer OTP.
+- 📨 **Automated Emails** — Immediate assignment and status update notifications sent securely.
+
+### 🤖 AI, UI & Accessibility
+- 💬 **Hybrid AI Chatbot** — 24/7 intelligent assistant (powered by Google Gemini) offering quick navigation and conversational support.
+- ✨ **AI Complaint Rephrasing** — Automatically converts informal or messy descriptions into formal, structured complaints.
+- 🎯 **Smart Department Suggestion** — Automatically suggests the correct government department based on the complaint text.
+- 🌍 **Multilingual Support (i18n)** — Full localization in **English, Hindi, and Punjabi**.
+- 💫 **Advanced Framer Animations** — Silky smooth route transitions, parallax, and component staggers.
 
 ### Security
 - 🔐 JWT-based authentication with role-based access control
@@ -63,30 +78,62 @@ A full-stack government complaint management platform built with the **MERN stac
 
 ## 📸 Screenshots
 
-### Citizen Dashboard
-> Personalized dashboard showing complaint statistics and recent activity
+### Homepage & Modes
+> Seamless modern interface with complete Dark and Light Mode support with smooth transitons.
 
-![Citizen Dashboard](docs/screenshots/citizen_dashboard.png)
+<p align="center">
+  <img src="docs/screenshots/HomePage.png" width="45%" />
+  <img src="docs/screenshots/HomePage_lightmode.png" width="45%" />
+</p>
 
-### My Complaints
-> Track all filed complaints with visual progress indicators
+### Secure Signup
+> Multi-step verification forms requiring Email OTP validation.
 
-![My Complaints](docs/screenshots/my_complaints.png)
+![Signup](docs/screenshots/SignUppage.png)
 
-### Admin — All Complaints
-> Admin view with department and officer assignment dropdowns
+### User Dashboard
+> Engaging dashboard populated with actionable statistics and rapid complaint tracking navigation.
 
-![Admin All Complaints](docs/screenshots/admin_complaints.png)
+![User Dashboard](docs/screenshots/UserDashboard.png)
 
-### Employee — Assigned Complaints
-> Officers can update status and add remarks for their assigned complaints
+### Filing a Complaint
+> Detailed form supporting auto-classification algorithms, intelligent rephrasing, and multi-language functionality.
 
-![Employee Assigned](docs/screenshots/employee_assigned.png)
+![File Complaint](docs/screenshots/FileComplaintUser.png)
 
-### Complaint Timeline
-> Full transparent lifecycle — every action logged with timestamps and who performed it
+### Admin Operations
+> Extensive system-wide oversight including Employee CRUD operations.
 
-![Complaint Timeline](docs/screenshots/complaint_timeline.png)
+<p align="center">
+  <img src="docs/screenshots/AdminDashboard.png" width="45%" />
+  <img src="docs/screenshots/EmployeeCRUD.png" width="45%" />
+</p>
+
+### Employee Dashboard
+> Organized portal where officers receive, review, and act on escalated complaints in real-time.
+
+![Employee Dashboard](docs/screenshots/EmpDashboard.png)
+
+### Complaint Triage & Direct Conversations
+> High-fidelity interfaces dedicated to transparent timelines and private citizen-to-employee text chains.
+
+<p align="center">
+  <img src="docs/screenshots/ComplaintViewEmployee.png" width="45%" />
+  <img src="docs/screenshots/ConversationView.png" width="45%" />
+</p>
+
+### Closing the Loop
+> Citizen Post-Resolution Feedback flow to ensure complete systemic closure and oversight.
+
+![Feedback Loop](docs/screenshots/FeedbackCardview.png)
+
+### Hybrid AI Chatbot Assist
+> Smart AI widget capable of conversational help, routing, and policy explanation.
+
+<p align="center">
+  <img src="docs/screenshots/ChatBot.png" width="45%" />
+  <img src="docs/screenshots/Chatbot2.png" width="45%" />
+</p>
 
 ---
 
@@ -94,10 +141,12 @@ A full-stack government complaint management platform built with the **MERN stac
 
 | Layer | Technology |
 |---|---|
-| **Frontend** | React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui |
+| **Frontend** | React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui, framer-motion |
 | **Backend** | Node.js, Express.js, ES Modules |
 | **Database** | MongoDB with Mongoose ODM |
 | **Authentication** | JWT (JSON Web Tokens), bcryptjs |
+| **AI Integration** | Google Gemini (`@google/generative-ai`), `gemini-flash-lite-latest` |
+| **Localization** | `react-i18next`, `i18next` |
 | **Styling** | Tailwind CSS with custom government-style theme |
 | **State Management** | React Context API |
 
@@ -111,45 +160,51 @@ samadhan-portal/
 │   ├── config/
 │   │   └── db.js               # MongoDB connection
 │   ├── controllers/
-│   │   ├── authController.js   # Register, login, profile
-│   │   ├── complaintController.js  # CRUD complaints
-│   │   ├── adminController.js  # Admin operations + user CRUD
-│   │   └── employeeController.js   # Officer actions
+│   │   ├── authController.js   # JWT generation, logic, and Nodemailer OTP verifiers
+│   │   ├── complaintController.js
+│   │   ├── adminController.js
+│   │   ├── employeeController.js
+│   │   └── aiController.js     # Chatbot logic, rephrase ops, and translation mapping
+│   ├── services/
+│   │   └── aiService.js        # Dedicated Gemini interface service
 │   ├── middleware/
-│   │   ├── authMiddleware.js   # JWT verification
-│   │   ├── roleMiddleware.js   # Role-based access
-│   │   └── errorMiddleware.js  # Global error handler
-│   ├── models/
-│   │   ├── User.js             # Users (citizen/employee/admin)
-│   │   ├── Department.js       # Government departments
-│   │   ├── Complaint.js        # Complaints with lifecycle
-│   │   └── ComplaintHistory.js # Audit trail
+│   │   ├── authMiddleware.js
+│   │   └── roleMiddleware.js
+│   ├── models/                 # Fully populated and scaled Mongo Schemas
+│   │   ├── User.js             
+│   │   ├── Department.js       
+│   │   ├── Complaint.js        
+│   │   ├── ComplaintHistory.js 
+│   │   ├── Comment.js          # Handles Private Messaging Threading
+│   │   ├── Feedback.js         # Post-Resolution Satisfaction Data
+│   │   ├── Notification.js     
+│   │   ├── ActivityLog.js      # Robust Systemic Audit Logic
+│   │   └── Otp.js              # Dedicated auto-expiring PIN ledger
 │   ├── routes/
-│   │   ├── authRoutes.js
-│   │   ├── complaintRoutes.js
-│   │   ├── adminRoutes.js
-│   │   └── employeeRoutes.js
 │   ├── utils/
-│   │   ├── generateComplaintId.js  # Auto-ID: CMP-2026-001
-│   │   ├── seedAdmin.js        # Default admin seeder
-│   │   └── seedData.js         # Departments & employees seeder
-│   ├── server.js               # Entry point
-│   ├── .env                    # Environment variables
-│   └── package.json
+│   │   ├── cronJobs.js         # Daily auto-escalation daemon processes
+│   │   ├── emailService.js     # Configured NodeMailer module instance
+│   │   └── seedData.js         
+│   ├── server.js               
+│   └── .env                    
 │
 ├── frontend/                   # React + Vite SPA
 │   ├── src/
-│   │   ├── components/         # Reusable UI components
-│   │   ├── context/            # AuthContext (JWT + roles)
+│   │   ├── components/
+│   │   │   ├── motion/         # Dedicated Framer animation wrappers
+│   │   │   └── chatbot/        # Draggable AI Chatbot module
+│   │   ├── context/            # AuthContext holding complex application states
+│   │   ├── i18n/               # Hardcoded JSON dictionaries backing live Multi-language
 │   │   ├── pages/
-│   │   │   ├── admin/          # Admin dashboard, complaints, departments, employees
-│   │   │   ├── employee/       # Employee dashboard, assigned complaints
-│   │   │   └── user/           # Citizen dashboard, file complaint, track progress
-│   │   └── routes/             # Protected route wrapper
-│   ├── vite.config.ts          # Dev server + API proxy
+│   │   │   ├── admin/          
+│   │   │   ├── employee/       
+│   │   │   ├── user/           
+│   │   │   └── auth/           # Fragmented 2-Step OTP and OAuth login pages
+│   │   └── routes/             
+│   ├── vite.config.ts          
 │   └── package.json
 │
-├── docs/screenshots/           # Application screenshots
+├── docs/screenshots/           # Current UI visual assets
 └── README.md
 ```
 
@@ -162,6 +217,7 @@ samadhan-portal/
 - **Node.js** ≥ 18.x
 - **MongoDB** running locally on `mongodb://localhost:27017`
 - **npm** ≥ 9.x
+- **Google Gemini API Key** (Free tier supported via Google AI Studio)
 
 ### Installation
 
@@ -173,6 +229,10 @@ cd samadhan-portal
 # Install backend dependencies
 cd backend
 npm install
+
+# Setup backend environment variables
+cp .env.example .env
+# Open backend/.env and add your GEMINI_API_KEY
 
 # Install frontend dependencies
 cd ../frontend
@@ -243,6 +303,14 @@ node utils/seedData.js
 | PUT | `/api/employee/update-status/:id` | Employee | Update complaint status |
 | POST | `/api/employee/add-remark/:id` | Employee | Add remark |
 
+### AI Services
+| Method | Endpoint | Access | Description |
+|--------|----------|--------|-------------|
+| POST | `/api/chat` | Public | Interact with Hybrid Bot |
+| POST | `/api/rephrase` | Private | Rephrase complaint text |
+| POST | `/api/translate` | Public | Translate text natively |
+| POST | `/api/suggest-category` | Private | Auto-suggest department |
+
 ---
 
 ## 🔑 Default Accounts
@@ -276,30 +344,32 @@ Running `node utils/seedData.js` creates:
 ## 🗺️ Roadmap
 
 ### ✅ Completed
-- [x] Full MERN stack implementation
-- [x] JWT authentication with role-based access (citizen, employee, admin)
-- [x] Complaint lifecycle: Submit → Assign → In Progress → Resolved
-- [x] Transparent timeline with audit trail
-- [x] Admin CRUD for departments and employees
-- [x] Citizen-only public registration (security)
-- [x] Default admin auto-seed
-- [x] Indian government department data seeding
-- [x] Progress tracker and status timeline UI
-- [x] Vite proxy for seamless dev experience
+-  Full MERN stack implementation
+-  JWT authentication with role-based access
+-  Complaint lifecycle: Submit → Assign → In Progress → Resolved
+-  Transparent timeline with audit trail
+-  Admin CRUD for departments and employees
+-  Citizen-only public registration
+-  **Email Notifications** — Real-time Nodemailer updates on assignments/status changes
+-  **Email OTP Verification** — 2-step PIN secure citizen registration
+-  **Search & Filters** — Complex server-side queries for Admin & Employees
+-  **Private Direct Messages** — Citizen-to-Officer isolated communication threads
+-  **Escalation Cron Jobs** — Auto-escalate unresolved complaints after 7 days
+-  **Citizen Post-Resolution Feedback** — Rating prompt after complaint closure
+-  **Google OAuth Demographics** — Smart autofill using Google Auth tickets
+-  **Advanced UI Animations** — Framer Motion parallax and route transitions
+-  **Multi-language Support (i18n)** (English, Hindi, Punjabi)
+-  **AI Chatbot & Rephrase Assistant** integrated
+-  **Default Admin Seed** and robust validation structures
 
 ### 🔜 Upcoming
-- [ ] **File Attachments** — Upload images/documents with complaints
-- [ ] **Email Notifications** — Notify citizens on status changes
-- [ ] **Search & Filters** — Filter complaints by status, department, date range
-- [ ] **Complaint Categories** — Predefined complaint types per department
-- [ ] **Analytics Dashboard** — Charts and graphs for complaint trends
-- [ ] **PDF Export** — Download complaint details as PDF
-- [ ] **Multi-language Support** — Hindi, English, and regional languages
-- [ ] **SMS Integration** — SMS alerts for rural citizens
-- [ ] **Escalation Rules** — Auto-escalate unresolved complaints after X days
-- [ ] **Citizen Feedback** — Rate resolution quality after complaint closure
-- [ ] **Mobile Responsive** — Optimized for mobile and tablet devices
-- [ ] **Deployment** — Docker setup + cloud deployment (AWS/Vercel)
+-  **File Attachments** — Upload images/documents with complaints
+-  **Complaint Categories** — Predefined complaint types per department
+-  **Analytics Dashboard** — Charts and graphs for complaint trends
+-  **PDF Export** — Download complaint details as PDF
+-  **SMS Integration** — SMS alerts for rural citizens
+-  **Mobile Responsive** — Optimized for mobile and tablet devices
+-  **Deployment** — Docker setup + cloud deployment (AWS/Vercel)
 
 ---
 

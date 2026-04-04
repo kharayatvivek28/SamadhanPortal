@@ -7,13 +7,16 @@ interface User {
   name: string;
   email: string;
   role: UserRole;
+  isFirstLogin?: boolean;
+  profileCompleted?: boolean;
   token: string;
 }
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => Promise<void>;
-  signup: (name: string, email: string, password: string, role: UserRole) => Promise<void>;
+  login: (email: string, password: string) => Promise<any>;
+  signup: (name: string, email: string, password: string, role: UserRole, otp: string) => Promise<any>;
+  googleLogin: (credential: string) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
   loading: boolean;
@@ -38,6 +41,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(false);
   }, []);
 
+  const saveUser = (data: any) => {
+    const userData: User = {
+      _id: data._id,
+      name: data.name,
+      email: data.email || "",
+      role: data.role,
+      isFirstLogin: data.isFirstLogin,
+      profileCompleted: data.profileCompleted,
+      token: data.token,
+    };
+    setUser(userData);
+    localStorage.setItem("samadhan_user", JSON.stringify(userData));
+  };
+
   const login = async (email: string, password: string) => {
     const res = await fetch("/api/auth/login", {
       method: "POST",
@@ -51,23 +68,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       throw new Error(data.message || "Login failed");
     }
 
-    const userData: User = {
-      _id: data._id,
-      name: data.name,
-      email: data.email,
-      role: data.role,
-      token: data.token,
-    };
-
-    setUser(userData);
-    localStorage.setItem("samadhan_user", JSON.stringify(userData));
+    saveUser(data);
+    return data;
   };
 
-  const signup = async (name: string, email: string, password: string, role: UserRole) => {
+  const signup = async (name: string, email: string, password: string, role: UserRole, otp: string) => {
     const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password, role }),
+      body: JSON.stringify({ name, email, password, role, otp }),
     });
 
     const data = await res.json();
@@ -76,16 +85,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       throw new Error(data.message || "Signup failed");
     }
 
-    const userData: User = {
-      _id: data._id,
-      name: data.name,
-      email: data.email,
-      role: data.role,
-      token: data.token,
-    };
+    // Auto-login after registration (no OTP verification needed)
+    saveUser(data);
+    return data;
+  };
 
-    setUser(userData);
-    localStorage.setItem("samadhan_user", JSON.stringify(userData));
+  const googleLogin = async (credential: string) => {
+    const res = await fetch("/api/auth/google", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ credential }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "Google login failed");
+    }
+
+    saveUser(data);
   };
 
   const logout = () => {
@@ -94,7 +112,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, isAuthenticated: !!user, loading }}>
+    <AuthContext.Provider
+      value={{ user, login, signup, googleLogin, logout, isAuthenticated: !!user, loading }}
+    >
       {children}
     </AuthContext.Provider>
   );

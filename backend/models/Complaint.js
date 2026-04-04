@@ -42,12 +42,28 @@ const complaintSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['Pending', 'Assigned', 'In Progress', 'Resolved'],
+      enum: ['Pending', 'Assigned', 'In Progress', 'Resolved', 'Revoked'],
       default: 'Pending',
     },
     currentStage: {
       type: String,
       default: 'Complaint Submitted',
+    },
+    slaDeadline: {
+      type: Date,
+      default: null,
+    },
+    escalationLevel: {
+      type: Number,
+      default: 0,
+    },
+    revokeReason: {
+      type: String,
+      default: null,
+    },
+    revokedAt: {
+      type: Date,
+      default: null,
     },
     attachments: [
       {

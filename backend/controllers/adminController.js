@@ -2,13 +2,21 @@ import Complaint from '../models/Complaint.js';
 import ComplaintHistory from '../models/ComplaintHistory.js';
 import Department from '../models/Department.js';
 import User from '../models/User.js';
+import Notification from '../models/Notification.js';
+import ActivityLog from '../models/ActivityLog.js';
+import { emitNotification } from '../utils/socketSetup.js';
+import { buildComplaintQuery } from '../utils/buildComplaintQuery.js';
+import { sendAssignmentEmail } from '../utils/emailService.js';
 
 // @desc    Get all complaints
 // @route   GET /api/admin/complaints
 // @access  Private (admin)
 const getAllComplaints = async (req, res) => {
   try {
-    const complaints = await Complaint.find()
+    let baseQuery = { status: { $ne: 'Revoked' } };
+    const query = await buildComplaintQuery(baseQuery, req.query);
+
+    const complaints = await Complaint.find(query)
       .populate('department', 'name')
       .populate('assignedOfficer', 'name email')
       .populate('user', 'name email')
@@ -56,6 +64,22 @@ const assignDepartment = async (req, res) => {
       .populate('assignedOfficer', 'name email')
       .populate('user', 'name email');
 
+    // Create and emit notification for the citizen
+    try {
+      const notification = await Notification.create({
+        userId: complaint.user,
+        message: `Your complaint #${complaint.complaintId} has been assigned to the ${department.name} department.`,
+        type: 'assignment',
+      });
+      emitNotification(complaint.user, notification);
+
+      if (updated.user && updated.user.email) {
+        await sendAssignmentEmail(updated.user.email, complaint.complaintId, department.name, null);
+      }
+    } catch (notifyErr) {
+      console.error('Failed to send notification or email:', notifyErr.message);
+    }
+
     res.json(updated);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -98,6 +122,31 @@ const assignOfficer = async (req, res) => {
       .populate('assignedOfficer', 'name email')
       .populate('user', 'name email');
 
+    // Create and emit notifications
+    try {
+      // Notify citizen
+      const citizenNotification = await Notification.create({
+        userId: complaint.user,
+        message: `An officer (${officer.name}) has been assigned to investigate your complaint #${complaint.complaintId}.`,
+        type: 'assignment',
+      });
+      emitNotification(complaint.user, citizenNotification);
+
+      // Notify employee (officer)
+      const officerNotification = await Notification.create({
+        userId: officerId,
+        message: `You have been assigned to handle a new complaint #${complaint.complaintId}.`,
+        type: 'assignment',
+      });
+      emitNotification(officerId, officerNotification);
+
+      if (updated.user && updated.user.email) {
+        await sendAssignmentEmail(updated.user.email, complaint.complaintId, updated.department?.name, officer.name);
+      }
+    } catch (notifyErr) {
+      console.error('Failed to send notification or email:', notifyErr.message);
+    }
+
     res.json(updated);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -121,6 +170,15 @@ const createDepartment = async (req, res) => {
     }
 
     const department = await Department.create({ name, description });
+
+    await ActivityLog.create({
+      action: 'Department Created',
+      user: req.user._id,
+      details: `Created new department: ${name}`,
+      entityType: 'Department',
+      entityId: department._id,
+    });
+
     res.status(201).json(department);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -147,10 +205,11 @@ const getDepartments = async (req, res) => {
 // @access  Private (admin)
 const createEmployee = async (req, res) => {
   try {
-    const { name, email, password, departmentId } = req.body;
+    const { name, email, departmentId } = req.body;
+    const password = req.body.password || '123456789';
 
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: 'Name, email, and password are required' });
+    if (!name || !email) {
+      return res.status(400).json({ message: 'Name and email are required' });
     }
 
     const userExists = await User.findOne({ email });
@@ -163,6 +222,7 @@ const createEmployee = async (req, res) => {
       email,
       password,
       role: 'employee',
+      isVerified: true,
       department: departmentId || null,
     });
 
@@ -172,6 +232,14 @@ const createEmployee = async (req, res) => {
         $push: { employees: user._id },
       });
     }
+
+    await ActivityLog.create({
+      action: 'Employee Created',
+      user: req.user._id,
+      details: `Created new employee: ${email}`,
+      entityType: 'User',
+      entityId: user._id,
+    });
 
     res.status(201).json(user);
   } catch (error) {
@@ -193,7 +261,7 @@ const getEmployees = async (req, res) => {
       employees.map(async (emp) => {
         const activeComplaints = await Complaint.countDocuments({
           assignedOfficer: emp._id,
-          status: { $ne: 'Resolved' },
+          status: { $nin: ['Resolved', 'Revoked'] },
         });
         return {
           ...emp.toObject(),
@@ -208,16 +276,44 @@ const getEmployees = async (req, res) => {
   }
 };
 
+// @desc    Get single employee details
+// @route   GET /api/admin/employees/:id
+// @access  Private (admin)
+const getEmployeeDetails = async (req, res) => {
+  try {
+    const employee = await User.findOne({ _id: req.params.id, role: 'employee' })
+      .select('-password')
+      .populate('department', 'name');
+
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+
+    const activeComplaints = await Complaint.countDocuments({
+      assignedOfficer: employee._id,
+      status: { $nin: ['Resolved', 'Revoked'] },
+    });
+
+    res.json({
+      ...employee.toObject(),
+      activeComplaints,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // @desc    Get dashboard stats
 // @route   GET /api/admin/stats
 // @access  Private (admin)
 const getStats = async (req, res) => {
   try {
-    const totalComplaints = await Complaint.countDocuments();
+    const totalComplaints = await Complaint.countDocuments({ status: { $ne: 'Revoked' } });
     const pending = await Complaint.countDocuments({ status: 'Pending' });
     const assigned = await Complaint.countDocuments({ status: 'Assigned' });
     const inProgress = await Complaint.countDocuments({ status: 'In Progress' });
     const resolved = await Complaint.countDocuments({ status: 'Resolved' });
+    const revoked = await Complaint.countDocuments({ status: 'Revoked' });
     const totalDepartments = await Department.countDocuments();
     const totalUsers = await User.countDocuments({ role: 'user' });
     const totalEmployees = await User.countDocuments({ role: 'employee' });
@@ -228,6 +324,7 @@ const getStats = async (req, res) => {
       assigned,
       inProgress,
       resolved,
+      revoked,
       activeDepartments: totalDepartments,
       totalUsers,
       totalEmployees,
@@ -261,7 +358,7 @@ const getAllUsers = async (req, res) => {
         if (u.role === 'employee') {
           obj.activeComplaints = await Complaint.countDocuments({
             assignedOfficer: u._id,
-            status: { $ne: 'Resolved' },
+            status: { $nin: ['Resolved', 'Revoked'] },
           });
         }
         return obj;
@@ -279,10 +376,11 @@ const getAllUsers = async (req, res) => {
 // @access  Private (admin)
 const createUser = async (req, res) => {
   try {
-    const { name, email, password, role, departmentId } = req.body;
+    const { name, email, role, departmentId } = req.body;
+    const password = req.body.password || '123456789';
 
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: 'Name, email, and password are required' });
+    if (!name || !email) {
+      return res.status(400).json({ message: 'Name and email are required' });
     }
 
     const userExists = await User.findOne({ email });
@@ -295,6 +393,7 @@ const createUser = async (req, res) => {
       email,
       password,
       role: role || 'employee',
+      isVerified: true,
       department: departmentId || null,
     });
 
@@ -304,6 +403,14 @@ const createUser = async (req, res) => {
         $push: { employees: user._id },
       });
     }
+
+    await ActivityLog.create({
+      action: 'User Created',
+      user: req.user._id,
+      details: `Created new user (${role || 'employee'}): ${email}`,
+      entityType: 'User',
+      entityId: user._id,
+    });
 
     res.status(201).json(user);
   } catch (error) {
@@ -348,6 +455,14 @@ const updateUser = async (req, res) => {
       .select('-password')
       .populate('department', 'name');
 
+    await ActivityLog.create({
+      action: 'User Updated',
+      user: req.user._id,
+      details: `Updated user profile: ${updated.email}`,
+      entityType: 'User',
+      entityId: updated._id,
+    });
+
     res.json(updated);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -376,8 +491,61 @@ const deleteUser = async (req, res) => {
       });
     }
 
+    const userEmail = user.email;
     await User.findByIdAndDelete(req.params.id);
+
+    await ActivityLog.create({
+      action: 'User Deleted',
+      user: req.user._id,
+      details: `Deleted user: ${userEmail}`,
+      entityType: 'User',
+      entityId: req.params.id,
+    });
+
     res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Get paginated revoked complaints
+// @route   GET /api/admin/complaints/revoked
+// @access  Private (admin)
+const getRevokedComplaints = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const startIndex = (page - 1) * limit;
+    
+    let query = { status: 'Revoked' };
+    
+    if (req.query.search) {
+      const searchRegex = new RegExp(req.query.search, 'i');
+      const matchedUsers = await User.find({ name: searchRegex }).select('_id');
+      const userIds = matchedUsers.map(u => u._id);
+      
+      query.$or = [
+        { complaintId: searchRegex },
+        { revokeReason: searchRegex },
+        { user: { $in: userIds } }
+      ];
+    }
+
+    const total = await Complaint.countDocuments(query);
+    const complaints = await Complaint.find(query)
+      .populate('user', 'name email')
+      .skip(startIndex)
+      .limit(limit)
+      .sort({ revokedAt: -1 });
+
+    res.json({
+      success: true,
+      count: complaints.length,
+      total,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page,
+      data: complaints
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -391,9 +559,11 @@ export {
   getDepartments,
   createEmployee,
   getEmployees,
+  getEmployeeDetails,
   getStats,
   getAllUsers,
   createUser,
   updateUser,
   deleteUser,
+  getRevokedComplaints,
 };
