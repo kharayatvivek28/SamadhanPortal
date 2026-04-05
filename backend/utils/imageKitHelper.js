@@ -30,7 +30,7 @@ export const uploadToImageKit = async (fileBuffer, fileName, folder = "/samadhan
   }
 
   try {
-    const response = await imagekit.upload({
+    const response = await imagekit.files.upload({
       file: fileBuffer.toString("base64"), // Can be base64 string, absolute file path or stream
       fileName: fileName,
       folder: folder,
