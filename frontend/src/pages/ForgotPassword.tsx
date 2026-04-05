@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { apiFetch } from "@/lib/api";
 import Navbar from "@/components/layout/Navbar";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
@@ -21,7 +22,7 @@ const ForgotPassword = () => {
     setError("");
 
     try {
-      const res = await fetch("/api/auth/forgot-password", {
+      const res = await apiFetch("/api/auth/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

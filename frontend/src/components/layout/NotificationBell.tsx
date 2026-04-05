@@ -2,6 +2,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Bell, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth, getAuthHeaders } from "@/context/AuthContext";
+import { apiFetch } from "@/lib/api";
+import { API_URL } from "@/lib/api";
 import { io, Socket } from "socket.io-client";
 
 interface Notification {
@@ -24,7 +26,7 @@ const NotificationBell = () => {
   const fetchNotifications = useCallback(async () => {
     if (!isAuthenticated) return;
     try {
-      const res = await fetch("/api/notifications", { headers: getAuthHeaders() });
+      const res = await apiFetch("/api/notifications", { headers: getAuthHeaders() });
       if (res.ok) {
         const data = await res.json();
         setNotifications(data.notifications || []);
@@ -75,7 +77,7 @@ const NotificationBell = () => {
   // Mark all as read
   const markAllRead = async () => {
     try {
-      await fetch("/api/notifications/read", {
+      await apiFetch("/api/notifications/read", {
         method: "PUT",
         headers: getAuthHeaders(),
       });

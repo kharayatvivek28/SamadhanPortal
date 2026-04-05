@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getAuthHeaders } from "@/context/AuthContext";
+import { apiFetch } from "@/lib/api";
 import { useTranslation } from "react-i18next";
 import PageTransition from "@/components/motion/PageTransition";
 import EmptyState from "@/components/ui/empty-state";
@@ -24,7 +25,7 @@ const ActivityLogPage = () => {
     const fetchLogs = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/admin/activity-log?page=${page}&limit=30`, {
+        const res = await apiFetch(`/api/admin/activity-log?page=${page}&limit=30`, {
           headers: getAuthHeaders(),
         });
         if (res.ok) {

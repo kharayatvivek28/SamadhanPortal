@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getAuthHeaders } from "@/context/AuthContext";
+import { apiFetch } from "@/lib/api";
 import FileUpload from "@/components/complaint/FileUpload";
 import { motion, AnimatePresence } from "framer-motion";
 import PageTransition from "@/components/motion/PageTransition";
@@ -34,7 +35,7 @@ const ComplaintForm = () => {
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const res = await fetch("/api/complaints/departments", { headers: getAuthHeaders() });
+        const res = await apiFetch("/api/complaints/departments", { headers: getAuthHeaders() });
         if (res.ok) {
           const data = await res.json();
           setDepartments(data);
@@ -52,7 +53,7 @@ const ComplaintForm = () => {
       if (form.description.length >= 50 && !form.department && !isSuggestingCategory) {
         setIsSuggestingCategory(true);
         try {
-          const res = await fetch("/api/suggest-category", {
+          const res = await apiFetch("/api/suggest-category", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ text: form.description }),
@@ -87,7 +88,7 @@ const ComplaintForm = () => {
     setShowRephrasedPreview(false);
 
     try {
-      const res = await fetch("/api/rephrase", {
+      const res = await apiFetch("/api/rephrase", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: form.description }),
@@ -148,7 +149,7 @@ const ComplaintForm = () => {
       const storedUser = localStorage.getItem("samadhan_user");
       const token = storedUser ? JSON.parse(storedUser).token : "";
 
-      const res = await fetch("/api/complaints", {
+      const res = await apiFetch("/api/complaints", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

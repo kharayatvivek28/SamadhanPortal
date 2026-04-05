@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { apiFetch } from "@/lib/api";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, ChevronLeft, ChevronRight, User, ImageIcon } from "lucide-react";
 
@@ -36,7 +37,7 @@ const FeedbackSlider = () => {
   useEffect(() => {
     const fetchFeedback = async () => {
       try {
-        const res = await fetch("/api/feedback/public-feed");
+        const res = await apiFetch("/api/feedback/public-feed");
         if (res.ok) {
           const data = await res.json();
           setFeedbacks(data.filter((f: any) => f.complaint));

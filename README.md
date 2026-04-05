@@ -215,9 +215,11 @@ samadhan-portal/
 ### Prerequisites
 
 - **Node.js** ≥ 18.x
-- **MongoDB** running locally on `mongodb://localhost:27017`
+- **MongoDB** — Local instance or [MongoDB Atlas](https://www.mongodb.com/atlas) cloud cluster
 - **npm** ≥ 9.x
-- **Google Gemini API Key** (Free tier supported via Google AI Studio)
+- **Gmail App Password** — For Nodemailer OTP & notification emails
+- **Google Gemini API Key** — Free tier via [Google AI Studio](https://aistudio.google.com/)
+- **Google OAuth Client ID** — From [Google Cloud Console](https://console.cloud.google.com/)
 
 ### Installation
 
@@ -226,44 +228,130 @@ samadhan-portal/
 git clone https://github.com/your-username/samadhan-portal.git
 cd samadhan-portal
 
-# Install backend dependencies
-cd backend
-npm install
-
-# Setup backend environment variables
-cp .env.example .env
-# Open backend/.env and add your GEMINI_API_KEY
-
-# Install frontend dependencies
-cd ../frontend
-npm install
+# Install all dependencies (backend + frontend)
+npm run build
 ```
 
-### Running the Application
+### Environment Setup
 
 ```bash
-# Terminal 1 — Start Backend (from project root)
+# Copy the example env file
+cp .env.example backend/.env
+```
+
+Then edit `backend/.env` with your actual values:
+
+```env
+NODE_ENV=development
+PORT=5000
+MONGO_URI=mongodb://localhost:27017/samadhan-portal
+JWT_SECRET=your_jwt_secret_here
+GOOGLE_CLIENT_ID=your_google_client_id
+VITE_GOOGLE_CLIENT_ID=your_google_client_id
+EMAIL_USER=your_gmail@gmail.com
+EMAIL_PASS=your_gmail_app_password
+GEMINI_API_KEY=your_gemini_api_key
+```
+
+### Running Locally (Development)
+
+```bash
+# Terminal 1 — Start Backend
 cd backend
-node server.js
+npm start
 # → MongoDB Connected: localhost
 # → Default admin account created (admin@gmail.com)
 # → Server running on port 5000
 
-# Terminal 2 — Start Frontend (from project root)
+# Terminal 2 — Start Frontend (with hot-reload)
 cd frontend
 npm run dev
 # → http://localhost:8080
 ```
 
+### Running Locally (Production Preview)
+
+```bash
+# Build the frontend
+cd frontend && npm run build && cd ..
+
+# Start the server in production mode
+cd backend
+set NODE_ENV=production && node server.js
+# → Open http://localhost:5000 — full app served from Express
+```
+
 ### Seed Sample Data (Optional)
 
 ```bash
-# With backend running, seed 6 departments and 30 employees:
 cd backend
 node utils/seedData.js
 ```
 
 ---
+
+## ☁️ Deployment (Split Architecture: Vercel + Render)
+
+This project is configured for **split architecture deployment**: the React frontend on **Vercel** and the Node.js backend on **Render.com**.
+
+### Step 1 — Create a MongoDB Atlas Cluster
+1. Go to [MongoDB Atlas](https://www.mongodb.com/atlas) and create a free M0 cluster.
+2. Copy the connection string (e.g. `mongodb+srv://user:pass@cluster.mongodb.net/samadhan-portal`).
+
+### Step 2 — Deploy Backend on Render
+1. Push your code to GitHub.
+2. Go to [Render Dashboard](https://dashboard.render.com/) → **New** → **Web Service**.
+3. Connect your GitHub repository.
+4. Configure the service:
+
+| Setting | Value |
+|---|---|
+| **Root Directory** | `backend` |
+| **Build Command** | `npm install` |
+| **Start Command** | `npm start` |
+
+5. Add **Environment Variables** under the "Environment" tab:
+
+| Key | Value |
+|---|---|
+| `NODE_ENV` | `production` |
+| `PORT` | `5000` |
+| `MONGO_URI` | `mongodb+srv://...` (your Atlas URI) |
+| `JWT_SECRET` | A strong random secret |
+| `GOOGLE_CLIENT_ID` | Your Google OAuth Client ID |
+| `EMAIL_USER` | Your Gmail address |
+| `EMAIL_PASS` | Your Gmail App Password |
+| `GEMINI_API_KEY` | Your Gemini API Key |
+
+6. Click **Deploy**. Note down the backend URL (e.g., `https://samadhan-api.onrender.com`).
+
+### Step 3 — Deploy Frontend on Vercel
+1. Go to [Vercel Dashboard](https://vercel.com/) → **Add New** → **Project**.
+2. Import the same GitHub repository.
+3. Configure the project:
+
+| Setting | Value |
+|---|---|
+| **Framework Preset** | `Vite` |
+| **Root Directory** | `frontend` |
+| **Build Command** | `npm run build` |
+| **Output Directory** | `dist` |
+
+4. Add **Environment Variables**:
+
+| Key | Value |
+|---|---|
+| `VITE_API_URL` | `https://samadhan-api.onrender.com` (from Step 2) |
+| `VITE_GOOGLE_CLIENT_ID` | Your Google OAuth Client ID |
+
+5. Click **Deploy**. Note down the frontend URL (e.g., `https://samadhan-portal.vercel.app`).
+
+### Step 4 — Configure CORS on Backend
+1. Go back to your backend service on **Render**.
+2. Add a new **Environment Variable**: `CORS_ORIGIN` = `https://samadhan-portal.vercel.app`
+3. Restart/Redeploy the backend to apply the changes.
+
+> **Tip:** Remember to whitelist `0.0.0.0/0` in your Atlas Network Access settings so Render can connect.
 
 ## 📡 API Endpoints
 
@@ -369,7 +457,7 @@ Running `node utils/seedData.js` creates:
 -  **PDF Export** — Download complaint details as PDF
 -  **SMS Integration** — SMS alerts for rural citizens
 -  **Mobile Responsive** — Optimized for mobile and tablet devices
--  **Deployment** — Docker setup + cloud deployment (AWS/Vercel)
+-  **Deployment** — Monolithic Render.com deployment with production builds
 
 ---
 

@@ -1,0 +1,11 @@
+{
+  "name": "samadhan-portal",
+  "version": "1.0.0",
+  "description": "Root orchestrator for Samadhan Portal deployment via Monolith approach",
+  "private": true,
+  "scripts": {
+    "install:backend": "cd backend && npm install",
+    "build": "npm run install:backend",
+    "start": "cd backend && npm start"
+  }
+}

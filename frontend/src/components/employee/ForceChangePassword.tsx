@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth, getAuthHeaders } from "@/context/AuthContext";
+import { apiFetch } from "@/lib/api";
 import { toast } from "sonner";
 import { KeyRound, LogOut, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -32,7 +33,7 @@ const ForceChangePassword = ({ isOpen }: ForceChangePasswordProps) => {
     setLoading(true);
     try {
       const token = user?.token;
-      const res = await fetch("/api/employee/change-password", {
+      const res = await apiFetch("/api/employee/change-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getAuthHeaders } from "@/context/AuthContext";
+import { apiFetch } from "@/lib/api";
 import { useTranslation } from "react-i18next";
 import StatsCard from "@/components/analytics/StatsCard";
 import ComplaintCard from "@/components/complaint/ComplaintCard";
@@ -20,7 +21,7 @@ const EmployeeDashboard = () => {
   useEffect(() => {
     const fetchAssigned = async () => {
       try {
-        const res = await fetch("/api/employee/assigned", { headers: getAuthHeaders() });
+        const res = await apiFetch("/api/employee/assigned", { headers: getAuthHeaders() });
         if (res.ok) setComplaints(await res.json());
       } catch (err) {
         console.error("Failed to fetch assigned complaints:", err);

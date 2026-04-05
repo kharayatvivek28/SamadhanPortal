@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getAuthHeaders } from "@/context/AuthContext";
+import { apiFetch } from "@/lib/api";
 import { useTranslation } from "react-i18next";
 // Animation: Added framer-motion for page transition and staggered card animations
 import { motion } from "framer-motion";
@@ -38,7 +39,7 @@ const AssignedComplaints = () => {
         const activeFilters = Object.fromEntries(Object.entries(filters).filter(([_, v]) => v !== ""));
         const queryParams = new URLSearchParams(activeFilters as Record<string, string>).toString();
 
-        const res = await fetch(`/api/employee/assigned?${queryParams}`, { headers: getAuthHeaders() });
+        const res = await apiFetch(`/api/employee/assigned?${queryParams}`, { headers: getAuthHeaders() });
         if (res.ok) {
           const data = await res.json();
           setComplaints(data);
@@ -61,7 +62,7 @@ const AssignedComplaints = () => {
       // Update status if changed
       const complaint = complaints.find(c => c.complaintId === complaintId);
       if (complaint && statuses[complaintId] !== complaint.status) {
-        await fetch(`/api/employee/update-status/${complaintId}`, {
+        await apiFetch(`/api/employee/update-status/${complaintId}`, {
           method: "PUT",
           headers,
           body: JSON.stringify({
@@ -71,7 +72,7 @@ const AssignedComplaints = () => {
         });
       } else if (remarks[complaintId]) {
         // Just add remark
-        await fetch(`/api/employee/add-remark/${complaintId}`, {
+        await apiFetch(`/api/employee/add-remark/${complaintId}`, {
           method: "POST",
           headers,
           body: JSON.stringify({ message: remarks[complaintId] }),
@@ -79,7 +80,7 @@ const AssignedComplaints = () => {
       }
 
       // Refresh data
-      const res = await fetch("/api/employee/assigned", { headers });
+      const res = await apiFetch("/api/employee/assigned", { headers });
       if (res.ok) {
         const data = await res.json();
         setComplaints(data);

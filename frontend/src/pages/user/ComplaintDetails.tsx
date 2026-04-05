@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getAuthHeaders, useAuth } from "@/context/AuthContext";
+import { apiFetch } from "@/lib/api";
 import StatusTimeline from "@/components/complaint/StatusTimeline";
 import ProgressTracker from "@/components/complaint/ProgressTracker";
 import SLACountdown from "@/components/complaint/SLACountdown";
@@ -43,7 +44,7 @@ const ComplaintDetails = () => {
   useEffect(() => {
     const fetchComplaint = async () => {
       try {
-        const res = await fetch(`/api/complaints/${id}`, { headers: getAuthHeaders() });
+        const res = await apiFetch(`/api/complaints/${id}`, { headers: getAuthHeaders() });
         if (res.ok) {
           const data = await res.json();
           setComplaint(data.complaint);
@@ -64,7 +65,7 @@ const ComplaintDetails = () => {
 
     const checkFeedback = async () => {
       try {
-        const res = await fetch(`/api/feedback/check/${id}`, { headers: getAuthHeaders() });
+        const res = await apiFetch(`/api/feedback/check/${id}`, { headers: getAuthHeaders() });
         if (res.ok) {
           const data = await res.json();
           if (data.hasFeedback) {

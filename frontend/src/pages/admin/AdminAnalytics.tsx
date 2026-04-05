@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getAuthHeaders } from "@/context/AuthContext";
+import { apiFetch } from "@/lib/api";
 import { useTranslation } from "react-i18next";
 import PageTransition from "@/components/motion/PageTransition";
 import StaggerContainer from "@/components/motion/StaggerContainer";
@@ -28,8 +29,8 @@ const AdminAnalytics = () => {
       try {
         const headers = getAuthHeaders();
         const [statsRes, complaintsRes] = await Promise.all([
-          fetch("/api/admin/stats", { headers }),
-          fetch("/api/admin/complaints", { headers }),
+          apiFetch("/api/admin/stats", { headers }),
+          apiFetch("/api/admin/complaints", { headers }),
         ]);
         if (statsRes.ok) setStats(await statsRes.json());
         if (complaintsRes.ok) setComplaints(await complaintsRes.json());

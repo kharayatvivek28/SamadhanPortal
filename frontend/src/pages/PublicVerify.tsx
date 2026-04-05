@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { apiFetch } from "@/lib/api";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import PageTransition from "@/components/motion/PageTransition";
@@ -45,7 +46,7 @@ const PublicVerify = () => {
     setSearched(true);
 
     try {
-      const res = await fetch(`/api/complaints/verify/${complaintId.trim()}`);
+      const res = await apiFetch(`/api/complaints/verify/${complaintId.trim()}`);
       if (res.ok) {
         const data = await res.json();
         setResult({

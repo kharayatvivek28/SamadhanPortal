@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Star, ImagePlus, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { getAuthHeaders } from "@/context/AuthContext";
+import { apiFetch } from "@/lib/api";
 
 interface ExistingFeedback {
   rating: number;
@@ -112,7 +113,7 @@ const FeedbackForm = ({ complaintId, existingFeedback, onSubmit }: Props) => {
       const storedUser = localStorage.getItem("samadhan_user");
       const token = storedUser ? JSON.parse(storedUser).token : "";
 
-      const res = await fetch("/api/feedback", {
+      const res = await apiFetch("/api/feedback", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getAuthHeaders } from "@/context/AuthContext";
+import { apiFetch } from "@/lib/api";
 import { useTranslation } from "react-i18next";
 import StatsCard from "@/components/analytics/StatsCard";
 import ComplaintCard from "@/components/complaint/ComplaintCard";
@@ -23,14 +24,14 @@ const UserDashboard = () => {
     const fetchComplaints = async () => {
       try {
         const headers = getAuthHeaders();
-        const res = await fetch("/api/complaints/my", { headers });
+        const res = await apiFetch("/api/complaints/my", { headers });
         if (res.ok) {
           const data = await res.json();
           setComplaints(data);
         }
 
         // Check for pending feedbacks
-        const feedbackRes = await fetch("/api/complaints/pending-feedback", { headers });
+        const feedbackRes = await apiFetch("/api/complaints/pending-feedback", { headers });
         if (feedbackRes.ok) {
           const feedbackData = await feedbackRes.json();
           if (feedbackData.length > 0) {

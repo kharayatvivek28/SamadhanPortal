@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
+import { apiFetch } from "@/lib/api";
 import { toast } from "sonner";
 import { UserCircle, Upload } from "lucide-react";
 
@@ -61,7 +62,7 @@ const ForceCompleteProfile = ({ isOpen, onCompleted }: ForceCompleteProfileProps
     setLoading(true);
     try {
       const token = user?.token;
-      const res = await fetch("/api/employee/complete-profile", {
+      const res = await apiFetch("/api/employee/complete-profile", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

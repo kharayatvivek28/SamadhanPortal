@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { getAuthHeaders } from "@/context/AuthContext";
+import { apiFetch } from "@/lib/api";
 import {
   Dialog,
   DialogContent,
@@ -39,7 +40,7 @@ const RevokeComplaintModal = ({ complaintId, onRevoked }: Props) => {
 
     setIsSubmitting(true);
     try {
-      const res = await fetch(`/api/complaints/${complaintId}/revoke`, {
+      const res = await apiFetch(`/api/complaints/${complaintId}/revoke`, {
         method: "PUT",
         headers: getAuthHeaders(),
         body: JSON.stringify({ reason }),

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { getAuthHeaders } from "@/context/AuthContext";
+import { apiFetch } from "@/lib/api";
 import { useTranslation } from "react-i18next";
 import FilterBar from "@/components/complaint/FilterBar";
 import EmptyState from "@/components/ui/empty-state";
@@ -46,9 +47,9 @@ const AllComplaints = () => {
         const queryParams = new URLSearchParams(activeFilters as Record<string, string>).toString();
 
         const [cRes, dRes, eRes] = await Promise.all([
-          fetch(`/api/admin/complaints?${queryParams}`, { headers }),
-          fetch("/api/admin/departments", { headers }),
-          fetch("/api/admin/employees", { headers }),
+          apiFetch(`/api/admin/complaints?${queryParams}`, { headers }),
+          apiFetch("/api/admin/departments", { headers }),
+          apiFetch("/api/admin/employees", { headers }),
         ]);
         if (cRes.ok) setComplaints(await cRes.json());
         if (dRes.ok) setDepartments(await dRes.json());
@@ -66,7 +67,7 @@ const AllComplaints = () => {
 
   const handleAssignDepartment = async (complaintId: string, departmentId: string) => {
     try {
-      const res = await fetch(`/api/admin/assign-department/${complaintId}`, {
+      const res = await apiFetch(`/api/admin/assign-department/${complaintId}`, {
         method: "PUT",
         headers: getAuthHeaders(),
         body: JSON.stringify({ departmentId }),
@@ -82,7 +83,7 @@ const AllComplaints = () => {
 
   const handleAssignOfficer = async (complaintId: string, officerId: string) => {
     try {
-      const res = await fetch(`/api/admin/assign-officer/${complaintId}`, {
+      const res = await apiFetch(`/api/admin/assign-officer/${complaintId}`, {
         method: "PUT",
         headers: getAuthHeaders(),
         body: JSON.stringify({ officerId }),

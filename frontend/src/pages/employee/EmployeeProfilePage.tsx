@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAuthHeaders } from "@/context/AuthContext";
+import { apiFetch, assetUrl, apiUrl } from "@/lib/api";
 import { useTranslation } from "react-i18next";
 import PageTransition from "@/components/motion/PageTransition";
 import SkeletonCard from "@/components/ui/skeleton-card";
@@ -34,7 +35,7 @@ const EmployeeProfilePage = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch("/api/employee/profile", { headers: getAuthHeaders() });
+        const res = await apiFetch("/api/employee/profile", { headers: getAuthHeaders() });
         if (res.ok) {
           const data = await res.json();
           setEmployee(data);
@@ -85,7 +86,7 @@ const EmployeeProfilePage = () => {
       const token = JSON.parse(localStorage.getItem("samadhan_user") || "{}").token;
       const headers: any = { Authorization: `Bearer ${token}` };
 
-      const res = await fetch("/api/employee/profile", {
+      const res = await fetch(apiUrl("/api/employee/profile"), {
         method: "PUT",
         headers,
         body: formPayload
@@ -100,7 +101,7 @@ const EmployeeProfilePage = () => {
         }
         
         // Refresh display data
-        const refresh = await fetch("/api/employee/profile", { headers: getAuthHeaders() });
+        const refresh = await apiFetch("/api/employee/profile", { headers: getAuthHeaders() });
         if (refresh.ok) setEmployee(await refresh.json());
       } else {
         const errData = await res.json();
@@ -137,7 +138,7 @@ const EmployeeProfilePage = () => {
           <div className="h-24 bg-primary/10 w-full relative">
             <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 rounded-full border-4 border-card bg-muted h-24 w-24 flex items-center justify-center overflow-hidden shadow-sm group">
               {previewUrl || employee.photographUrl ? (
-                <img src={previewUrl || employee.photographUrl} alt={employee.name} className="h-full w-full object-cover" />
+                <img src={previewUrl || assetUrl(employee.photographUrl)} alt={employee.name} className="h-full w-full object-cover" />
               ) : (
                 <User className="h-10 w-10 text-muted-foreground" />
               )}

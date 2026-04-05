@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
+import { apiFetch } from "@/lib/api";
 import Navbar from "@/components/layout/Navbar";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -30,7 +31,7 @@ const ResetPassword = () => {
     setError("");
 
     try {
-      const res = await fetch(`/api/auth/reset-password/${token}`, {
+      const res = await apiFetch(`/api/auth/reset-password/${token}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password }),

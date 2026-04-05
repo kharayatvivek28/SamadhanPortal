@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { apiFetch } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { GoogleLogin } from "@react-oauth/google";
 import Navbar from "@/components/layout/Navbar";
@@ -32,7 +33,7 @@ const Signup = () => {
     setError(""); 
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/send-register-otp", {
+      const res = await apiFetch("/api/auth/send-register-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),

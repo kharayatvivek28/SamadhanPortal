@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getAuthHeaders } from "@/context/AuthContext";
+import { apiFetch, assetUrl } from "@/lib/api";
 import PageTransition from "@/components/motion/PageTransition";
 import SkeletonCard from "@/components/ui/skeleton-card";
 import { ArrowLeft, User, Phone, MapPin, Calendar, Briefcase, Mail, Building, CheckCircle2 } from "lucide-react";
@@ -17,7 +18,7 @@ const EmployeeProfile = () => {
   useEffect(() => {
     const fetchEmployee = async () => {
       try {
-        const res = await fetch(`/api/admin/employees/${id}`, { headers: getAuthHeaders() });
+        const res = await apiFetch(`/api/admin/employees/${id}`, { headers: getAuthHeaders() });
         if (res.ok) {
           setEmployee(await res.json());
         } else {
@@ -66,7 +67,7 @@ const EmployeeProfile = () => {
           <div className="h-24 bg-primary/10 w-full relative">
             <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 rounded-full border-4 border-card bg-muted h-24 w-24 flex items-center justify-center overflow-hidden shadow-sm">
               {employee.photographUrl ? (
-                <img src={employee.photographUrl} alt={employee.name} className="h-full w-full object-cover" />
+                <img src={assetUrl(employee.photographUrl)} alt={employee.name} className="h-full w-full object-cover" />
               ) : (
                 <User className="h-10 w-10 text-muted-foreground" />
               )}

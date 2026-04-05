@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getAuthHeaders } from "@/context/AuthContext";
+import { apiFetch } from "@/lib/api";
 import { useTranslation } from "react-i18next";
 import ComplaintCard from "@/components/complaint/ComplaintCard";
 import FilterBar from "@/components/complaint/FilterBar";
@@ -22,7 +23,7 @@ const MyComplaints = () => {
         const activeFilters = Object.fromEntries(Object.entries(filters).filter(([_, v]) => v !== ""));
         const queryParams = new URLSearchParams(activeFilters as Record<string, string>).toString();
         
-        const res = await fetch(`/api/complaints/my?${queryParams}`, { headers: getAuthHeaders() });
+        const res = await apiFetch(`/api/complaints/my?${queryParams}`, { headers: getAuthHeaders() });
         if (res.ok) {
           const data = await res.json();
           setComplaints(data);

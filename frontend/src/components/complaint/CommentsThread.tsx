@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useAuth, getAuthHeaders } from "@/context/AuthContext";
+import { getAuthHeaders, useAuth } from "@/context/AuthContext";
+import { apiFetch } from "@/lib/api";
 import { Send, User, ShieldCheck } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
@@ -32,7 +33,7 @@ const CommentsThread = ({ complaintDbId, complaintStatus, assignedOfficerId }: P
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const res = await fetch(`/api/complaints/${complaintDbId}/comments`, {
+        const res = await apiFetch(`/api/complaints/${complaintDbId}/comments`, {
           headers: getAuthHeaders(),
         });
         if (res.ok) {
@@ -54,7 +55,7 @@ const CommentsThread = ({ complaintDbId, complaintStatus, assignedOfficerId }: P
 
     setLoading(true);
     try {
-      const res = await fetch(`/api/complaints/${complaintDbId}/comments`, {
+      const res = await apiFetch(`/api/complaints/${complaintDbId}/comments`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify({ text: newText }),

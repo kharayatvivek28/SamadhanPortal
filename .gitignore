@@ -30,3 +30,7 @@ dist-ssr
 
 # Agent data
 .gemini
+
+# Uploads (user-generated, not tracked)
+backend/uploads/*
+!backend/uploads/.gitkeep

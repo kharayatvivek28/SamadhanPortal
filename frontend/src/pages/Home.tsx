@@ -7,6 +7,7 @@ import Footer from "@/components/layout/Footer";
 import FeedbackSlider from "@/components/layout/FeedbackSlider";
 // Animation: Added useScroll + useTransform for hero parallax effect
 import { motion, Variants, TargetAndTransition, useScroll, useTransform } from "framer-motion";
+import { apiFetch } from "@/lib/api";
 import { useState, useEffect } from "react";
 import CountUp from "react-countup";
 import { useInView } from "react-intersection-observer";
@@ -82,7 +83,7 @@ const Home = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch("/api/complaints/public/stats");
+        const response = await apiFetch("/api/complaints/public/stats");
         if (response.ok) {
           const data = await response.json();
           setDashboardStats(data);

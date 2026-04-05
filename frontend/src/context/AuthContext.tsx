@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { apiFetch } from "@/lib/api";
 
 export type UserRole = "user" | "employee" | "admin";
 
@@ -56,7 +57,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const login = async (email: string, password: string) => {
-    const res = await fetch("/api/auth/login", {
+    const res = await apiFetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -73,7 +74,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signup = async (name: string, email: string, password: string, role: UserRole, otp: string) => {
-    const res = await fetch("/api/auth/register", {
+    const res = await apiFetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password, role, otp }),
@@ -91,7 +92,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const googleLogin = async (credential: string) => {
-    const res = await fetch("/api/auth/google", {
+    const res = await apiFetch("/api/auth/google", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ credential }),

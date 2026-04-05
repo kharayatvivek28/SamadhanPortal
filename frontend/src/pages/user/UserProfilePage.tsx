@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAuthHeaders } from "@/context/AuthContext";
+import { apiFetch, assetUrl, apiUrl } from "@/lib/api";
 import { useTranslation } from "react-i18next";
 import PageTransition from "@/components/motion/PageTransition";
 import SkeletonCard from "@/components/ui/skeleton-card";
@@ -34,7 +35,7 @@ const UserProfilePage = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch("/api/auth/me", { headers: getAuthHeaders() });
+        const res = await apiFetch("/api/auth/me", { headers: getAuthHeaders() });
         if (res.ok) {
           const data = await res.json();
           setProfile(data);
@@ -85,7 +86,7 @@ const UserProfilePage = () => {
       const token = JSON.parse(localStorage.getItem("samadhan_user") || "{}").token;
       const headers: any = { Authorization: `Bearer ${token}` };
 
-      const res = await fetch("/api/auth/profile", {
+      const res = await fetch(apiUrl("/api/auth/profile"), {
         method: "PUT",
         headers,
         body: formPayload
@@ -99,7 +100,7 @@ const UserProfilePage = () => {
         }
         
         // Refresh display data
-        const refresh = await fetch("/api/auth/me", { headers: getAuthHeaders() });
+        const refresh = await apiFetch("/api/auth/me", { headers: getAuthHeaders() });
         if (refresh.ok) setProfile(await refresh.json());
       } else {
         const errData = await res.json();
@@ -136,7 +137,7 @@ const UserProfilePage = () => {
           <div className="h-24 bg-primary/10 w-full relative">
             <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 rounded-full border-4 border-card bg-muted h-24 w-24 flex items-center justify-center overflow-hidden shadow-sm group">
               {previewUrl || profile.photographUrl ? (
-                <img src={previewUrl || profile.photographUrl} alt={profile.name} className="h-full w-full object-cover" />
+                <img src={previewUrl || assetUrl(profile.photographUrl)} alt={profile.name} className="h-full w-full object-cover" />
               ) : (
                 <User className="h-10 w-10 text-muted-foreground" />
               )}

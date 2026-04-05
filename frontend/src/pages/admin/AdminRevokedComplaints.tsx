@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { getAuthHeaders } from "@/context/AuthContext";
+import { apiFetch } from "@/lib/api";
 import { useTranslation } from "react-i18next";
 import SearchFilter from "@/components/ui/search-filter";
 import EmptyState from "@/components/ui/empty-state";
@@ -28,7 +29,7 @@ const AdminRevokedComplaints = () => {
       });
       if (search) qs.append("search", search);
 
-      const res = await fetch(`/api/admin/complaints/revoked?${qs.toString()}`, {
+      const res = await apiFetch(`/api/admin/complaints/revoked?${qs.toString()}`, {
         headers: getAuthHeaders(),
       });
       

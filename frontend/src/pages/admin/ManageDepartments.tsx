@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getAuthHeaders } from "@/context/AuthContext";
+import { apiFetch } from "@/lib/api";
 import { useTranslation } from "react-i18next";
 // Animation: Added framer-motion for form toggle and table row animations
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,7 +16,7 @@ const ManageDepartments = () => {
 
   const fetchDepartments = async () => {
     try {
-      const res = await fetch("/api/admin/departments", { headers: getAuthHeaders() });
+      const res = await apiFetch("/api/admin/departments", { headers: getAuthHeaders() });
       if (res.ok) setDepartments(await res.json());
     } catch (err) {
       console.error("Failed to fetch departments:", err);
@@ -29,7 +30,7 @@ const ManageDepartments = () => {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch("/api/admin/departments", {
+      const res = await apiFetch("/api/admin/departments", {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify(newDept),

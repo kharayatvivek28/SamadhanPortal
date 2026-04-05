@@ -4,6 +4,8 @@ import http from 'http';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import cors from 'cors';
+import helmet from 'helmet';
+import compression from 'compression';
 import connectDB from './config/db.js';
 import seedAdmin from './utils/seedAdmin.js';
 import { initSocket } from './utils/socketSetup.js';
@@ -25,7 +27,17 @@ const server = http.createServer(app);
 initSocket(server);
 
 // Middleware
-app.use(cors());
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',')
+  : '*';
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
+app.use(helmet({
+  contentSecurityPolicy: false,
+}));
+app.use(compression());
 app.use(express.json());
 
 // Serve uploaded files statically
@@ -48,7 +60,7 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Samadhan Portal API is running' });
 });
 
-// Error handling
+// Error handling (for API routes — must come after API routes, before catch-all)
 app.use(notFound);
 app.use(errorHandler);
 

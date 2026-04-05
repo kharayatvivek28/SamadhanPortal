@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getAuthHeaders } from "@/context/AuthContext";
+import { apiFetch } from "@/lib/api";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 // Animation: Added framer-motion for form toggle, table row stagger, and button interactions
@@ -27,8 +28,8 @@ const ManageEmployees = () => {
     try {
       const headers = getAuthHeaders();
       const [eRes, dRes] = await Promise.all([
-        fetch("/api/admin/users?role=employee", { headers }),
-        fetch("/api/admin/departments", { headers }),
+        apiFetch("/api/admin/users?role=employee", { headers }),
+        apiFetch("/api/admin/departments", { headers }),
       ]);
       if (eRes.ok) setEmployees(await eRes.json());
       if (dRes.ok) setDepartments(await dRes.json());
@@ -125,7 +126,7 @@ const ManageEmployees = () => {
   const handleDelete = async (id: string, name: string) => {
     if (!confirm(`${t("common.confirmDelete")} ${name}?`)) return;
     try {
-      const res = await fetch(`/api/admin/users/${id}`, {
+      const res = await apiFetch(`/api/admin/users/${id}`, {
         method: "DELETE",
         headers: getAuthHeaders(),
       });

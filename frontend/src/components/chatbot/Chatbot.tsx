@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, X, Send, Sparkles } from "lucide-react";
 import ChatMessage from "./ChatMessage";
 import QuickReplies from "./QuickReplies";
+import { API_URL } from "@/lib/api";
 
 interface Message {
   id: string;
@@ -22,7 +23,7 @@ interface QuickReply {
   action: string;
 }
 
-const API_BASE = "/api";
+const API_BASE = `${API_URL}/api`;
 
 const Chatbot = () => {
   const { t, i18n } = useTranslation();
