@@ -14,16 +14,7 @@ const profilesDir = path.join(__dirname, '..', 'uploads', 'profiles');
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, feedbackDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
-    cb(null, `feedback-${uniqueSuffix}${ext}`);
-  },
-});
+const memoryStorage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
   const allowedTypes = /jpeg|jpg|png|gif|webp/;
@@ -38,43 +29,19 @@ const fileFilter = (req, file, cb) => {
 };
 
 export const uploadFeedbackImages = multer({
-  storage,
+  storage: memoryStorage,
   fileFilter,
   limits: { fileSize: 5 * 1024 * 1024 },
 }).array('images', 3);
 
-// Complaint attachments storage
-const complaintStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, complaintsDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
-    cb(null, `complaint-${uniqueSuffix}${ext}`);
-  },
-});
-
 export const uploadComplaintImages = multer({
-  storage: complaintStorage,
+  storage: memoryStorage,
   fileFilter,
   limits: { fileSize: 5 * 1024 * 1024 },
 }).array('attachments', 5);
 
-// Profile pictures storage
-const profileStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, profilesDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
-    cb(null, `profile-${uniqueSuffix}${ext}`);
-  },
-});
-
 export const uploadProfilePic = multer({
-  storage: profileStorage,
+  storage: memoryStorage,
   fileFilter,
   limits: { fileSize: 5 * 1024 * 1024 },
 }).single('photograph');

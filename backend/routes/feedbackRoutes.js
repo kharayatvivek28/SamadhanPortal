@@ -3,6 +3,7 @@ import { protect } from '../middleware/authMiddleware.js';
 import { uploadFeedbackImages } from '../middleware/uploadMiddleware.js';
 import Feedback from '../models/Feedback.js';
 import Complaint from '../models/Complaint.js';
+import { uploadToImageKit } from '../utils/imageKitHelper.js';
 
 const router = express.Router();
 
@@ -94,7 +95,14 @@ router.post('/', protect, handleUpload, async (req, res) => {
     }
 
     // Collect uploaded image paths
-    const images = req.files ? req.files.map(f => `/uploads/feedback/${f.filename}`) : [];
+    const images = [];
+    if (req.files && req.files.length > 0) {
+      for (const f of req.files) {
+        const fileBaseName = f.originalname.replace(/[^a-zA-Z0-9.\-]/g, '_');
+        const url = await uploadToImageKit(f.buffer, `feedback-${Date.now()}-${fileBaseName}`, '/samadhan/feedback');
+        images.push(url);
+      }
+    }
 
     const feedback = await Feedback.create({
       complaint: complaint._id,

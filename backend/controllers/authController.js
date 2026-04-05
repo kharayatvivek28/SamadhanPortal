@@ -5,6 +5,7 @@ import User from '../models/User.js';
 import Otp from '../models/Otp.js';
 import ActivityLog from '../models/ActivityLog.js';
 import { sendPasswordResetEmail, sendOtpEmail } from '../utils/emailService.js';
+import { uploadToImageKit } from '../utils/imageKitHelper.js';
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -305,8 +306,8 @@ const updateProfile = async (req, res) => {
 
     // Handle profile picture upload
     if (req.file) {
-      // Create url path for frontend to consume via express static proxy
-      user.photographUrl = `/uploads/profiles/${req.file.filename}`;
+      const fileName = `profile-${user._id}-${Date.now()}`;
+      user.photographUrl = await uploadToImageKit(req.file.buffer, fileName, '/samadhan/profiles');
     }
 
     // Set profileCompleted to true if key demographic info is added

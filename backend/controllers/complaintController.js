@@ -9,6 +9,7 @@ import User from '../models/User.js';
 import Feedback from '../models/Feedback.js';
 import { emitNotification } from '../utils/socketSetup.js';
 import { buildComplaintQuery } from '../utils/buildComplaintQuery.js';
+import { uploadToImageKit } from '../utils/imageKitHelper.js';
 
 // @desc    Get list of departments (for complaint form)
 // @route   GET /api/complaints/departments
@@ -45,7 +46,14 @@ const createComplaint = async (req, res) => {
     }
 
     // Collect uploaded attachment paths
-    const attachments = req.files ? req.files.map(f => `/uploads/complaints/${f.filename}`) : [];
+    const attachments = [];
+    if (req.files && req.files.length > 0) {
+      for (const f of req.files) {
+        const fileBaseName = f.originalname.replace(/[^a-zA-Z0-9.\-]/g, '_');
+        const url = await uploadToImageKit(f.buffer, `complaint-${Date.now()}-${fileBaseName}`, '/samadhan/complaints');
+        attachments.push(url);
+      }
+    }
 
     const complaint = await Complaint.create({
       complaintId,
