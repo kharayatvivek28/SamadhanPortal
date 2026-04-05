@@ -368,7 +368,8 @@ const forgotPassword = async (req, res) => {
 
     // Note: If using Vite in dev (port 8080), change domain manually if req.get('host') shows 5000
     // But since proxy handles relative URLs, we should use front-end explicit domain if detached
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8080';
+    const corsOrigin = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',')[0] : 'http://localhost:8080';
+    const frontendUrl = process.env.FRONTEND_URL || corsOrigin;
     const finalResetUrl = `${frontendUrl}/reset-password/${resetToken}`;
 
     try {
