@@ -324,9 +324,6 @@ const updateProfile = async (req, res) => {
       profileCompleted: updatedUser.profileCompleted,
     });
   } catch (error) {
-    if (error.code === 11000 && error.keyPattern?.phone) {
-      return res.status(400).json({ message: 'Phone number already in use by another account' });
-    }
     res.status(500).json({ message: error.message });
   }
 };

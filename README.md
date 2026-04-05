@@ -58,8 +58,9 @@ A full-stack government complaint management platform built with the **MERN stac
 
 ### 🛡️ Security & Real-Time Alerts
 - 🔐 **JWT-based Authentication** — Complete with role-based access controls and automatic Google OAuth metadata extraction.
-- 📧 **Email OTP Verification** — 2-Step secure registration ensures valid citizen identities via Nodemailer OTP.
+- 📧 **Email OTP Verification** — 2-Step secure registration ensures valid citizen identities via Brevo OTP.
 - 📨 **Automated Emails** — Immediate assignment and status update notifications sent securely.
+- 🔌 **Real-Time WebSocket Notifications** — Socket.io push notifications for assignments, status changes, chat replies, escalations, and revocations.
 
 ### 🤖 AI, UI & Accessibility
 - 💬 **Hybrid AI Chatbot** — 24/7 intelligent assistant (powered by Google Gemini) offering quick navigation and conversational support.
@@ -145,6 +146,7 @@ A full-stack government complaint management platform built with the **MERN stac
 | **Backend** | Node.js, Express.js, ES Modules |
 | **Database** | MongoDB with Mongoose ODM |
 | **Authentication** | JWT (JSON Web Tokens), bcryptjs |
+| **Real-Time** | Socket.io v4.8 (WebSocket with polling fallback) |
 | **Media Storage** | ImageKit (Cloud CDN & Transformations) |
 | **Email Service** | Brevo REST API (Bypasses SMTP port restrictions) |
 | **AI Integration** | Google Gemini (`@google/generative-ai`), `gemini-flash-lite-latest` |
@@ -185,7 +187,8 @@ samadhan-portal/
 │   ├── routes/
 │   ├── utils/
 │   │   ├── cronJobs.js         # Daily auto-escalation daemon processes
-│   │   ├── emailService.js     # Configured NodeMailer module instance
+│   │   ├── emailService.js     # Brevo HTTP API email sender
+│   │   ├── socketSetup.js      # Socket.io WebSocket server & emitNotification()
 │   │   └── seedData.js         
 │   ├── server.js               
 │   └── .env                    
