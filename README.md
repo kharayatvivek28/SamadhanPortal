@@ -145,6 +145,8 @@ A full-stack government complaint management platform built with the **MERN stac
 | **Backend** | Node.js, Express.js, ES Modules |
 | **Database** | MongoDB with Mongoose ODM |
 | **Authentication** | JWT (JSON Web Tokens), bcryptjs |
+| **Media Storage** | ImageKit (Cloud CDN & Transformations) |
+| **Email Service** | Brevo REST API (Bypasses SMTP port restrictions) |
 | **AI Integration** | Google Gemini (`@google/generative-ai`), `gemini-flash-lite-latest` |
 | **Localization** | `react-i18next`, `i18next` |
 | **Styling** | Tailwind CSS with custom government-style theme |
@@ -217,7 +219,8 @@ samadhan-portal/
 - **Node.js** ≥ 18.x
 - **MongoDB** — Local instance or [MongoDB Atlas](https://www.mongodb.com/atlas) cloud cluster
 - **npm** ≥ 9.x
-- **Gmail App Password** — For Nodemailer OTP & notification emails
+- **Brevo API Key** — For HTTP-based email notifications and OTP validation
+- **ImageKit API Keys** — For fast Cloud CDN media storage
 - **Google Gemini API Key** — Free tier via [Google AI Studio](https://aistudio.google.com/)
 - **Google OAuth Client ID** — From [Google Cloud Console](https://console.cloud.google.com/)
 
@@ -248,8 +251,10 @@ MONGO_URI=mongodb://localhost:27017/samadhan-portal
 JWT_SECRET=your_jwt_secret_here
 GOOGLE_CLIENT_ID=your_google_client_id
 VITE_GOOGLE_CLIENT_ID=your_google_client_id
-EMAIL_USER=your_gmail@gmail.com
-EMAIL_PASS=your_gmail_app_password
+BREVO_API_KEY=your_brevo_api_key_here
+IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/your_id
+IMAGEKIT_PUBLIC_KEY=your_public_key
+IMAGEKIT_PRIVATE_KEY=your_private_key
 GEMINI_API_KEY=your_gemini_api_key
 ```
 
@@ -319,8 +324,10 @@ This project is configured for **split architecture deployment**: the React fron
 | `MONGO_URI` | `mongodb+srv://...` (your Atlas URI) |
 | `JWT_SECRET` | A strong random secret |
 | `GOOGLE_CLIENT_ID` | Your Google OAuth Client ID |
-| `EMAIL_USER` | Your Gmail address |
-| `EMAIL_PASS` | Your Gmail App Password |
+| `BREVO_API_KEY` | Your Brevo REST API Key |
+| `IMAGEKIT_URL_ENDPOINT` | Your ImageKit Endpoint ID |
+| `IMAGEKIT_PUBLIC_KEY` | Your ImageKit Public Key |
+| `IMAGEKIT_PRIVATE_KEY` | Your ImageKit Private Key |
 | `GEMINI_API_KEY` | Your Gemini API Key |
 
 6. Click **Deploy**. Note down the backend URL (e.g., `https://samadhan-api.onrender.com`).
@@ -438,7 +445,7 @@ Running `node utils/seedData.js` creates:
 -  Transparent timeline with audit trail
 -  Admin CRUD for departments and employees
 -  Citizen-only public registration
--  **Email Notifications** — Real-time Nodemailer updates on assignments/status changes
+-  **Email Notifications** — Brevo HTTP API integration for assignments/status changes
 -  **Email OTP Verification** — 2-step PIN secure citizen registration
 -  **Search & Filters** — Complex server-side queries for Admin & Employees
 -  **Private Direct Messages** — Citizen-to-Officer isolated communication threads
@@ -449,15 +456,15 @@ Running `node utils/seedData.js` creates:
 -  **Multi-language Support (i18n)** (English, Hindi, Punjabi)
 -  **AI Chatbot & Rephrase Assistant** integrated
 -  **Default Admin Seed** and robust validation structures
+-  **File Attachments & Profile Pictures** — Memory Buffer to ImageKit Cloud CDN upload pipeline
+-  **Mobile Responsive** — Optimized grid and flex structures for mobile and tablet devices
+-  **Deployment** — Live split architecture with Vercel (Frontend) and Render (Backend)
 
 ### 🔜 Upcoming
--  **File Attachments** — Upload images/documents with complaints
 -  **Complaint Categories** — Predefined complaint types per department
 -  **Analytics Dashboard** — Charts and graphs for complaint trends
 -  **PDF Export** — Download complaint details as PDF
 -  **SMS Integration** — SMS alerts for rural citizens
--  **Mobile Responsive** — Optimized for mobile and tablet devices
--  **Deployment** — Monolithic Render.com deployment with production builds
 
 ---
 
