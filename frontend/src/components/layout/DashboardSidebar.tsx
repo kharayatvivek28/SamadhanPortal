@@ -1,8 +1,8 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslation } from "react-i18next";
 import {
-  LayoutDashboard, FileText, FilePlus, Users, Building2, List, X, BarChart3, Activity, ArchiveX
+  LayoutDashboard, FileText, FilePlus, Users, Building2, List, X, BarChart3, Activity, ArchiveX, LogOut
 } from "lucide-react";
 // Animation: Added framer-motion for sidebar slide-in, overlay backdrop, and staggered nav links
 import { motion, AnimatePresence } from "framer-motion";
@@ -32,9 +32,15 @@ const navItemVariants = {
 };
 
 const DashboardSidebar = ({ open, onClose }: Props) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { t } = useTranslation();
+  const navigate = useNavigate();
   if (!user) return null;
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   const userLinks = [
     { to: "/user/dashboard", label: t("sidebar.dashboard"), icon: LayoutDashboard },
@@ -67,7 +73,7 @@ const DashboardSidebar = ({ open, onClose }: Props) => {
       <AnimatePresence>
         {open && (
           <motion.div
-            className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+            className="fixed inset-0 bg-black/50 z-[55] lg:hidden backdrop-blur-sm"
             onClick={onClose}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -79,19 +85,19 @@ const DashboardSidebar = ({ open, onClose }: Props) => {
 
       {/* Animation: Sidebar with smooth slide-in on mobile, static on desktop */}
       <motion.aside
-        className={`fixed lg:sticky top-16 left-0 z-40 h-[calc(100vh-4rem)] w-60 bg-sidebar flex flex-col ${!open ? "-translate-x-full lg:translate-x-0" : ""}`}
+        className={`fixed lg:sticky top-0 lg:top-16 left-0 z-[60] lg:z-40 h-screen lg:h-[calc(100vh-4rem)] w-64 md:w-72 lg:w-60 bg-sidebar flex flex-col ${!open ? "-translate-x-full lg:translate-x-0" : ""}`}
         animate={open ? { x: 0 } : undefined}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
       >
-        <div className="flex items-center justify-between px-4 py-4 lg:hidden">
-          <span className="text-sidebar-foreground font-semibold text-sm">{t("sidebar.menu")}</span>
+        <div className="flex items-center justify-between px-6 lg:px-4 py-5 lg:py-4 lg:hidden border-b border-sidebar-border/50">
+          <span className="text-sidebar-foreground font-bold text-lg">{t("sidebar.menu")}</span>
           <motion.button onClick={onClose} whileTap={{ scale: 0.9 }} className="p-2 -mr-2 relative z-50">
-            <X className="h-5 w-5 text-sidebar-foreground pointer-events-none" />
+            <X className="h-6 w-6 text-sidebar-foreground pointer-events-none" />
           </motion.button>
         </div>
         {/* Animation: Staggered nav link entrance */}
         <motion.nav
-          className="flex-1 px-3 py-2 space-y-1"
+          className="flex-1 px-4 lg:px-3 py-4 space-y-1.5 overflow-y-auto"
           variants={navContainerVariants}
           initial="hidden"
           animate="visible"
@@ -100,12 +106,23 @@ const DashboardSidebar = ({ open, onClose }: Props) => {
           {links.map((l) => (
             <motion.div key={l.to} variants={navItemVariants}>
               <NavLink to={l.to} end className={({ isActive }) => linkClass(isActive)} onClick={onClose}>
-                <l.icon className="h-4 w-4" />
+                <l.icon className="h-5 w-5 lg:h-4 lg:w-4" />
                 {l.label}
               </NavLink>
             </motion.div>
           ))}
         </motion.nav>
+
+        {/* Logout button at bottom on mobile */}
+        <div className="p-4 lg:hidden border-t border-sidebar-border/50">
+          <button
+            onClick={handleLogout}
+            className="flex items-center w-full gap-3 px-4 py-3 rounded text-sm font-medium text-red-500 hover:bg-red-500/10 transition-colors"
+          >
+            <LogOut className="h-5 w-5 pointer-events-none" />
+            {t("nav.logout")}
+          </button>
+        </div>
       </motion.aside>
     </>
   );

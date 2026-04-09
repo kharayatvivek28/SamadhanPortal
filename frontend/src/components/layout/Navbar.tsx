@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslation } from "react-i18next";
 import { LogOut, Menu, X } from "lucide-react";
@@ -12,7 +12,10 @@ const Navbar = () => {
   const { user, logout, isAuthenticated } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const isDashboardRoute = location.pathname.startsWith("/user/") || location.pathname.startsWith("/admin/") || location.pathname.startsWith("/employee/") || location.pathname.endsWith("dashboard");
 
   const handleLogout = () => {
     logout();
@@ -76,12 +79,18 @@ const Navbar = () => {
             <ThemeToggle />
             <NotificationBell />
             <motion.button
-              onClick={() => setMobileOpen(!mobileOpen)}
+              onClick={() => {
+                if (isDashboardRoute) {
+                  window.dispatchEvent(new Event("toggle-mobile-sidebar"));
+                } else {
+                  setMobileOpen(!mobileOpen);
+                }
+              }}
               whileTap={{ scale: 0.9 }}
               className="p-2 -mr-2 relative z-50"
-              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              aria-label={isDashboardRoute ? "Open sidebar" : mobileOpen ? "Close menu" : "Open menu"}
             >
-              {mobileOpen ? <X className="h-6 w-6 pointer-events-none" /> : <Menu className="h-6 w-6 pointer-events-none" />}
+              {mobileOpen && !isDashboardRoute ? <X className="h-6 w-6 pointer-events-none" /> : <Menu className="h-6 w-6 pointer-events-none" />}
             </motion.button>
           </div>
         </div>
