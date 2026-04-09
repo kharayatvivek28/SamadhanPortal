@@ -6,9 +6,14 @@ const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    const handleToggle = () => setSidebarOpen(true);
+    const handleToggle = () => setSidebarOpen(prev => !prev);
+    const handleClose = () => setSidebarOpen(false);
     window.addEventListener("toggle-mobile-sidebar", handleToggle);
-    return () => window.removeEventListener("toggle-mobile-sidebar", handleToggle);
+    window.addEventListener("close-mobile-sidebar", handleClose);
+    return () => {
+      window.removeEventListener("toggle-mobile-sidebar", handleToggle);
+      window.removeEventListener("close-mobile-sidebar", handleClose);
+    };
   }, []);
 
   return (

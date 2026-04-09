@@ -83,47 +83,49 @@ const DashboardSidebar = ({ open, onClose }: Props) => {
         )}
       </AnimatePresence>
 
-      {/* Animation: Sidebar with smooth slide-in on mobile, static on desktop */}
-      <motion.aside
-        className={`fixed lg:sticky top-0 lg:top-16 left-0 z-[60] lg:z-40 h-[100dvh] lg:h-[calc(100vh-4rem)] w-64 md:w-72 lg:w-60 bg-sidebar flex flex-col overflow-hidden ${!open ? "-translate-x-full lg:translate-x-0" : ""}`}
-        animate={open ? { x: 0 } : undefined}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      {/* Sidebar with CSS transitions on mobile, sticky on desktop */}
+      <aside
+        className={`fixed lg:sticky top-0 lg:top-16 left-0 z-[60] lg:z-40 h-[100dvh] lg:h-[calc(100vh-4rem)] w-64 md:w-72 lg:w-60 bg-sidebar flex flex-col overflow-hidden transition-transform duration-300 ease-in-out ${open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
       >
         <div className="flex items-center justify-between px-6 lg:px-4 py-5 lg:py-4 lg:hidden border-b border-sidebar-border/50 shrink-0">
           <span className="text-sidebar-foreground font-bold text-lg">{t("sidebar.menu")}</span>
-          <button type="button" onClick={onClose} className="p-3 -mr-3 relative z-50 rounded-full hover:bg-sidebar-accent/50 active:bg-sidebar-accent/80 transition-colors">
+          <button type="button" onClick={() => {
+            onClose();
+            window.dispatchEvent(new Event("close-mobile-sidebar"));
+          }} className="p-3 -mr-3 relative z-50 rounded-full hover:bg-sidebar-accent/50 active:bg-sidebar-accent/80 transition-colors">
             <X className="h-6 w-6 text-sidebar-foreground pointer-events-none" />
           </button>
         </div>
-        {/* Animation: Staggered nav link entrance */}
-        <motion.nav
-          className="flex-1 px-4 lg:px-3 py-4 space-y-1.5 overflow-y-auto"
-          variants={navContainerVariants}
-          initial="hidden"
-          animate="visible"
-          key={user.role}
-        >
+        
+        <nav className="flex-1 px-4 lg:px-3 py-4 space-y-1.5 overflow-y-auto">
           {links.map((l) => (
-            <motion.div key={l.to} variants={navItemVariants}>
-              <NavLink to={l.to} end className={({ isActive }) => linkClass(isActive)} onClick={onClose}>
+            <div key={l.to}>
+              <NavLink to={l.to} end className={({ isActive }) => linkClass(isActive)} onClick={() => {
+                onClose();
+                window.dispatchEvent(new Event("close-mobile-sidebar"));
+              }}>
                 <l.icon className="h-5 w-5 lg:h-4 lg:w-4" />
                 {l.label}
               </NavLink>
-            </motion.div>
+            </div>
           ))}
-        </motion.nav>
+        </nav>
 
         {/* Logout button at bottom on mobile */}
         <div className="p-4 lg:hidden border-t border-sidebar-border/50">
           <button
-            onClick={handleLogout}
+            onClick={() => {
+              handleLogout();
+              onClose();
+              window.dispatchEvent(new Event("close-mobile-sidebar"));
+            }}
             className="flex items-center w-full gap-3 px-4 py-3 rounded text-sm font-medium text-red-500 hover:bg-red-500/10 transition-colors"
           >
             <LogOut className="h-5 w-5 pointer-events-none" />
             {t("nav.logout")}
           </button>
         </div>
-      </motion.aside>
+      </aside>
     </>
   );
 };
