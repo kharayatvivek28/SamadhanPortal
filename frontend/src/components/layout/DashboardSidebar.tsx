@@ -4,8 +4,6 @@ import { useTranslation } from "react-i18next";
 import {
   LayoutDashboard, FileText, FilePlus, Users, Building2, List, X, BarChart3, Activity, ArchiveX, LogOut
 } from "lucide-react";
-// Animation: Added framer-motion for sidebar slide-in, overlay backdrop, and staggered nav links
-import { motion, AnimatePresence } from "framer-motion";
 
 interface Props {
   open: boolean;
@@ -16,20 +14,6 @@ const linkClass = (isActive: boolean) =>
   `flex items-center gap-3 px-4 py-2.5 rounded text-sm transition-colors ${
     isActive ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium" : "text-sidebar-foreground hover:bg-sidebar-accent/50"
   }`;
-
-// Animation: Stagger variants for nav links
-const navContainerVariants = {
-  hidden: { opacity: 1 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.05, delayChildren: 0.1 },
-  },
-};
-
-const navItemVariants = {
-  hidden: { opacity: 0, x: -12 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.25, ease: "easeOut" as const } },
-};
 
 const DashboardSidebar = ({ open, onClose }: Props) => {
   const { user, logout } = useAuth();
@@ -69,19 +53,15 @@ const DashboardSidebar = ({ open, onClose }: Props) => {
 
   return (
     <>
-      {/* Animation: Backdrop overlay with fade */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            className="fixed inset-0 bg-black/50 z-[55] lg:hidden backdrop-blur-sm"
-            onClick={onClose}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          />
-        )}
-      </AnimatePresence>
+      {/* Backdrop overlay with fade using CSS transition */}
+      <div
+        className={`fixed inset-0 bg-black/50 z-[55] lg:hidden backdrop-blur-sm transition-opacity duration-300 ease-in-out ${open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
+        onClick={() => {
+          onClose();
+          window.dispatchEvent(new Event("close-mobile-sidebar"));
+        }}
+        aria-hidden={!open}
+      />
 
       {/* Sidebar with CSS transitions on mobile, sticky on desktop */}
       <aside
