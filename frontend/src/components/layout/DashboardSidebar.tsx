@@ -85,8 +85,8 @@ const DashboardSidebar = ({ open, onClose }: Props) => {
       >
         <div className="flex items-center justify-between px-4 py-4 lg:hidden">
           <span className="text-sidebar-foreground font-semibold text-sm">{t("sidebar.menu")}</span>
-          <motion.button onClick={onClose} whileTap={{ scale: 0.9 }}>
-            <X className="h-5 w-5 text-sidebar-foreground" />
+          <motion.button onClick={onClose} whileTap={{ scale: 0.9 }} className="p-2 -mr-2 relative z-50">
+            <X className="h-5 w-5 text-sidebar-foreground pointer-events-none" />
           </motion.button>
         </div>
         {/* Animation: Staggered nav link entrance */}
