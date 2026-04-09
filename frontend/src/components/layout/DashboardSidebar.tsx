@@ -85,15 +85,15 @@ const DashboardSidebar = ({ open, onClose }: Props) => {
 
       {/* Animation: Sidebar with smooth slide-in on mobile, static on desktop */}
       <motion.aside
-        className={`fixed lg:sticky top-0 lg:top-16 left-0 z-[60] lg:z-40 h-screen lg:h-[calc(100vh-4rem)] w-64 md:w-72 lg:w-60 bg-sidebar flex flex-col ${!open ? "-translate-x-full lg:translate-x-0" : ""}`}
+        className={`fixed lg:sticky top-0 lg:top-16 left-0 z-[60] lg:z-40 h-[100dvh] lg:h-[calc(100vh-4rem)] w-64 md:w-72 lg:w-60 bg-sidebar flex flex-col overflow-hidden ${!open ? "-translate-x-full lg:translate-x-0" : ""}`}
         animate={open ? { x: 0 } : undefined}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
       >
-        <div className="flex items-center justify-between px-6 lg:px-4 py-5 lg:py-4 lg:hidden border-b border-sidebar-border/50">
+        <div className="flex items-center justify-between px-6 lg:px-4 py-5 lg:py-4 lg:hidden border-b border-sidebar-border/50 shrink-0">
           <span className="text-sidebar-foreground font-bold text-lg">{t("sidebar.menu")}</span>
-          <motion.button onClick={onClose} whileTap={{ scale: 0.9 }} className="p-2 -mr-2 relative z-50">
+          <button type="button" onClick={onClose} className="p-3 -mr-3 relative z-50 rounded-full hover:bg-sidebar-accent/50 active:bg-sidebar-accent/80 transition-colors">
             <X className="h-6 w-6 text-sidebar-foreground pointer-events-none" />
-          </motion.button>
+          </button>
         </div>
         {/* Animation: Staggered nav link entrance */}
         <motion.nav
